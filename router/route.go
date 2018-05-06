@@ -24,6 +24,7 @@ func Route(router *gin.Engine) {
 		api.POST("/register", user.Register)
 		api.POST("/signout", middleware.SigninRequired,
 			user.Signout)
+		api.GET("/users",user.Users)
 
 	}
 }

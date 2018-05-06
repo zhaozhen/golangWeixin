@@ -31,6 +31,12 @@ type UserReqData struct {
 	PasswordAgain string `json:"checkPassword" binding:"required,min=6,max=20"`
 }
 
+type UserVo struct {
+	Name  string `json:"username" `
+	Email string `json:"email"`
+	Phone string `json:"phone"`
+	Role  string `json:"role"`
+}
 
 const (
 	activeDuration = 24 * 60 * 60
@@ -210,4 +216,45 @@ func Signout(c *gin.Context) {
 		"msg":   "success",
 		"data":  gin.H{},
 	})
+}
+
+func Users(c *gin.Context) {
+	//处理参数
+	queryString, exists := c.GetQuery("username")
+	// 初始化参数
+	users := make([]model.User, 0)
+	//错误处理对象
+	SendErrJSON := common.SendErrJSON
+	if exists {
+		sql := "name like ?"
+		if err := common.DB.Where(sql, queryString).Find(&users).Error; err != nil {
+			SendErrJSON("查找用户出错", c)
+			return
+		}
+
+	}else {
+		if err := common.DB.Find(&users).Error; err != nil {
+			SendErrJSON("查找全部用户出错", c)
+			return
+		}
+	}
+
+	////转换一下结构体，只把有用的暴露给前端
+	//uservos := make([]UserVo, 0)
+	//
+	//tmp,err:=json.Marshal(users)
+	//if err != nil {
+	//	fmt. Println ( "error:" , err )
+	//}
+	//fmt.Printf("%s\n", tmp)
+	//json.Unmarshal(tmp,&uservos)
+
+	c.JSON(http.StatusOK, gin.H{
+		"errNo": common.ErrorCode.SUCCESS,
+		"msg":   "success",
+		"data":  gin.H{
+			"users":users,
+		},
+	})
+
 }
