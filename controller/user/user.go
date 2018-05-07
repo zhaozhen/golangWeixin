@@ -221,39 +221,36 @@ func Signout(c *gin.Context) {
 func Users(c *gin.Context) {
 	//处理参数
 	queryString, exists := c.GetQuery("username")
+	pageQ := c.DefaultQuery("page", "0")
+	limitQ := c.DefaultQuery("limit", "0")
+
+	page,_:=strconv.Atoi(pageQ)
+	limit,_:=strconv.Atoi(limitQ)
+
 	// 初始化参数
 	users := make([]model.User, 0)
 	//错误处理对象
 	SendErrJSON := common.SendErrJSON
 	if exists {
 		sql := "name like ?"
-		if err := common.DB.Where(sql, queryString).Find(&users).Error; err != nil {
+		if err := common.DB.Where(sql, "%"+queryString+"%").Offset((page-1)*limit).Limit(limit).Find(&users).Error; err != nil {
 			SendErrJSON("查找用户出错", c)
 			return
 		}
 
 	}else {
-		if err := common.DB.Find(&users).Error; err != nil {
+		if err := common.DB.Offset((page-1)*limit).Limit(limit).Find(&users).Error; err != nil {
 			SendErrJSON("查找全部用户出错", c)
 			return
 		}
 	}
-
-	////转换一下结构体，只把有用的暴露给前端
-	//uservos := make([]UserVo, 0)
-	//
-	//tmp,err:=json.Marshal(users)
-	//if err != nil {
-	//	fmt. Println ( "error:" , err )
-	//}
-	//fmt.Printf("%s\n", tmp)
-	//json.Unmarshal(tmp,&uservos)
 
 	c.JSON(http.StatusOK, gin.H{
 		"errNo": common.ErrorCode.SUCCESS,
 		"msg":   "success",
 		"data":  gin.H{
 			"users":users,
+			"total":len(users),
 		},
 	})
 
