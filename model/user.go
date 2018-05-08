@@ -16,7 +16,7 @@ import (
 // User 用户
 type User struct {
 	ID           uint       `gorm:"primary_key" json:"id"`
-	CreatedAt    time.Time  `json:"createdAt"`
+	CreatedAt    time.Time `json:"createdAt" time_format:"sql_datetime" time_utc:"false"`
 	UpdatedAt    time.Time  `json:"updatedAt"`
 	DeletedAt    *time.Time `sql:"index" json:"deletedAt"`
 	ActivatedAt  *time.Time `json:"activatedAt"`
@@ -162,3 +162,18 @@ const (
 	// MaxIntroduceLen 个人简介的最大长度
 	MaxIntroduceLen = 500
 )
+
+//复杂的下发，格式化字符串
+func (this User) MarshalJSON() ([]byte, error) {
+	// 定义一个该结构体的别名
+	type AliasStu User
+	// 定义一个新的结构体
+	tmpStudent:= struct {
+		AliasStu
+		CreatedAt string `json:"createdAt"`
+	}{
+		AliasStu:(AliasStu)(this),
+		CreatedAt:this.CreatedAt.Format("2006-01-02 15:04:05"),
+	}
+	return json.Marshal(tmpStudent)
+}

@@ -220,9 +220,9 @@ func Signout(c *gin.Context) {
 
 func Users(c *gin.Context) {
 	//处理参数
-	queryString, exists := c.GetQuery("username")
-	pageQ := c.DefaultQuery("page", "0")
-	limitQ := c.DefaultQuery("limit", "0")
+	queryString, exists := c.GetQuery("name")
+	pageQ := c.DefaultQuery("page", "1")
+	limitQ := c.DefaultQuery("limit", "20")
 
 	page,_:=strconv.Atoi(pageQ)
 	limit,_:=strconv.Atoi(limitQ)
