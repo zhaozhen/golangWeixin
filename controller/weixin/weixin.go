@@ -3,21 +3,21 @@ package weixin
 import (
 	"github.com/gin-gonic/gin"
 	"fmt"
-	"github.com/gin-gonic/gin/binding"
 	"golangWeixin/utils"
 	"golangWeixin/constant"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type WeixinParam struct {
-	Signature string `json:"signature" binding:"required"`
-	Timestamp string `json:"timestamp" binding:"required"`
-	Nonce     string `json:"nonce" binding:"required"`
-	Echostr   string `json:"echostr" binding:"required"`
+	Signature string `form:"signature" json:"signature" binding:"exists"`
+	Timestamp string `form:"timestamp" json:"timestamp" binding:"exists"`
+	Nonce     string `form:"nonce" json:"nonce" binding:"exists"`
+	Echostr   string `form:"echostr" json:"echostr" binding:"exists"`
 }
 
 func WeixinAction(c *gin.Context)  {
 	var weixinParam WeixinParam
-	if err := c.ShouldBindWith(&weixinParam, binding.Query); err != nil {
+	if err := c.ShouldBindWith(&weixinParam,binding.Form); err != nil {
 		fmt.Println(err.Error())
 		fmt.Println("解析参数出错！")
 		return
