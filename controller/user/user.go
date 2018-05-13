@@ -17,13 +17,13 @@ import (
 	"golangWeixin/model"
 )
 
-
 // 登录类型
 type UsernameLogin struct {
 	SigninInput string `json:"username" binding:"required,min=4,max=20"`
 	Password    string `json:"password" binding:"required,min=6,max=20"`
 	//LuosimaoRes string `json:"luosimaoRes"`
 }
+
 // 注册类型
 type UserReqData struct {
 	Name          string `json:"username" binding:"required,min=4,max=20"`
@@ -36,6 +36,14 @@ type UserVo struct {
 	Email string `json:"email"`
 	Phone string `json:"phone"`
 	Role  string `json:"role"`
+}
+
+type AddUserVo struct {
+	Name     string `json:"name" binding:"required" `
+	Sex      string `json:"sex" binding:"required"`
+	CreateAt string `json:"createAt" binding:"required"`
+	Location string `json:"location" binding:"required"`
+	Role     string `json:"role" binding:"required"`
 }
 
 const (
@@ -148,7 +156,7 @@ func Register(c *gin.Context) {
 	userData.Name = strings.TrimSpace(userData.Name)
 	userData.PasswordAgain = strings.TrimSpace(userData.PasswordAgain)
 	userData.Password = strings.TrimSpace(userData.Password)
-	if userData.Password!=userData.PasswordAgain {
+	if userData.Password != userData.PasswordAgain {
 		SendErrJSON("两次密码不一致", c)
 		return
 	}
@@ -159,7 +167,7 @@ func Register(c *gin.Context) {
 	}
 
 	var user model.User
-	if err := common.DB.Where("name = ?",userData.Name).Find(&user).Error; err == nil {
+	if err := common.DB.Where("name = ?", userData.Name).Find(&user).Error; err == nil {
 		if user.Name == userData.Name {
 			SendErrJSON("用户名 "+user.Name+" 已被注册", c)
 			return
@@ -224,8 +232,8 @@ func Users(c *gin.Context) {
 	pageQ := c.DefaultQuery("page", "1")
 	limitQ := c.DefaultQuery("limit", "20")
 
-	page,_:=strconv.Atoi(pageQ)
-	limit,_:=strconv.Atoi(limitQ)
+	page, _ := strconv.Atoi(pageQ)
+	limit, _ := strconv.Atoi(limitQ)
 
 	// 初始化参数
 	users := make([]model.User, 0)
@@ -233,13 +241,13 @@ func Users(c *gin.Context) {
 	SendErrJSON := common.SendErrJSON
 	if exists {
 		sql := "name like ?"
-		if err := common.DB.Where(sql, "%"+queryString+"%").Offset((page-1)*limit).Limit(limit).Find(&users).Error; err != nil {
+		if err := common.DB.Where(sql, "%"+queryString+"%").Offset((page - 1) * limit).Limit(limit).Find(&users).Error; err != nil {
 			SendErrJSON("查找用户出错", c)
 			return
 		}
 
-	}else {
-		if err := common.DB.Offset((page-1)*limit).Limit(limit).Find(&users).Error; err != nil {
+	} else {
+		if err := common.DB.Offset((page - 1) * limit).Limit(limit).Find(&users).Error; err != nil {
 			SendErrJSON("查找全部用户出错", c)
 			return
 		}
@@ -248,10 +256,40 @@ func Users(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"errNo": common.ErrorCode.SUCCESS,
 		"msg":   "success",
-		"data":  gin.H{
-			"users":users,
-			"total":len(users),
+		"data": gin.H{
+			"users": users,
+			"total": len(users),
 		},
 	})
 
+}
+
+func AddAndUpdateUser(c *gin.Context) {
+	var addUser model.User
+	if err := c.ShouldBindWith(&addUser, binding.JSON); err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("解析参数出错！")
+		return
+	}
+	addUser.Status = model.UserStatusInActive
+	addUser.Email = "stronger@qq.com"
+	addUser.Role = model.UserRoleNormal
+	addUser.Sex = model.UserSexMale
+	var user model.User
+	if err := common.DB.Where("name = ?", addUser.Name).Find(&user).Error; err == nil {
+		if user.Name == addUser.Name {
+			common.SendErrJSON("用户名 "+user.Name+" 已被添加", c)
+			return
+		}
+	}
+
+	if err := common.DB.Create(&addUser).Error; err != nil {
+		common.SendErrJSON("error", c)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"errNo": common.ErrorCode.SUCCESS,
+		"msg":   "success",
+		"data":  addUser,
+	})
 }

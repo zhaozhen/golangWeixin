@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"golangWeixin/config"
-	"fmt"
 	"golangWeixin/middleware"
 	"golangWeixin/controller/user"
 	"golangWeixin/controller/weixin"
@@ -15,16 +14,13 @@ func Route(router *gin.Engine) {
 
 	api := router.Group(apiPrefix, middleware.RefreshTokenCookie)
 	{
-		api.GET("/siteinfo", middleware.SigninRequired, func(gin *gin.Context) {
-			fmt.Printf("SUCCESS INTO")
-			fmt.Printf(gin.ContentType() + "\n")
-		})
 		api.GET("/weixin.action", weixin.WeixinAction)
 		api.POST("/signin", user.Signin)
 		api.POST("/register", user.Register)
 		api.POST("/signout", middleware.SigninRequired,
 			user.Signout)
 		api.GET("/users",user.Users)
+		api.POST("/user",user.AddAndUpdateUser)
 
 	}
 }
