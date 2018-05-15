@@ -29,10 +29,13 @@ const (
 
 
 //得到所有有效的记录
-func (keywordsReply KeywordsReply) findAll()([]KeywordsReply){
+func (keywordsReply KeywordsReply) findAll()([]KeywordsReply,string){
 	reply := make([]KeywordsReply, 0)
-	common.DB.Where("status = ?" ,StatusNormal).Find(&reply);
-	return reply;
+	var err="";
+	if err :=common.DB.Where("status = ?" ,StatusNormal).Find(&reply);err != nil{
+		err=err;
+	}
+	return reply,err;
 }
 
 
