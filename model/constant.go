@@ -60,11 +60,11 @@ const (
 )
 
 const (
-	// ContentTypeMarkdown markdown
-	ContentTypeMarkdown = 1
+	//正常的状态，
+	StatusNormal = 0
 
-	// ContentTypeHTML html
-	ContentTypeHTML = 2
+	// 被删除的状态
+	StatusDelete = 9
 )
 
 // redis相关常量, 为了防止从redis中存取数据时key混乱了，在此集中定义常量来作为各key的名字
