@@ -2,7 +2,6 @@ package model
 
 import (
 	"time"
-	"golangWeixin/common"
 )
 
 type KeywordsReply struct {
@@ -18,6 +17,10 @@ type KeywordsReply struct {
 	UpdatePerson string    `json:"update_person"`
 }
 
+func (KeywordsReply) TableName() string {
+	return "keywords_reply"
+}
+
 const (
 	KeywordsReplyMsgText  = 0
 	KeywordsReplyMsgImage = 1
@@ -28,14 +31,13 @@ const (
 )
 
 
-//得到所有有效的记录
-func (keywordsReply KeywordsReply) findAll()([]KeywordsReply,string){
-	reply := make([]KeywordsReply, 0)
-	var err="";
-	if err :=common.DB.Where("status = ?" ,StatusNormal).Find(&reply);err != nil{
-		err=err;
-	}
-	return reply,err;
-}
+////得到所有有效的记录
+//func (keywordsReply KeywordsReply) FindAll()(keys []KeywordsReply, err error){
+//	reply := make([]KeywordsReply, 0)
+//	if err :=common.DB.Where("status = ?" ,StatusNormal).Find(&reply);err != nil{
+//		return nil,err.Error;
+//	}
+//	return reply,nil;
+//}
 
 

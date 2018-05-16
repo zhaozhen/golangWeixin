@@ -6,6 +6,7 @@ import (
 	"golangWeixin/middleware"
 	"golangWeixin/controller/user"
 	"golangWeixin/controller/weixin"
+	"golangWeixin/controller/keyrepaly"
 )
 
 // Route 路由
@@ -21,6 +22,7 @@ func Route(router *gin.Engine) {
 			user.Signout)
 		api.GET("/users",user.Users)
 		api.POST("/user",user.AddAndUpdateUser)
+		api.GET("/key_replys",keyrepaly.KeyRpeyls)
 
 	}
 }
