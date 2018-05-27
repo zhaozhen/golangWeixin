@@ -1,14 +1,31 @@
 package model
 
-import "time"
+import (
+	"github.com/jinzhu/gorm"
+	"golangWeixin/common"
+)
 
 type KeywordsReplyVideoSub struct {
-	ID           uint      `gorm:"primary_key" json:"id"`
-	Title        string    `json:"title"`
-	Description  string    `json:"description"`
-	Status       int       `json:"status"`
-	CreatDate    time.Time `json:"creat_date" time_format:"sql_datetime" time_utc:"false"`
-	CreatePerson string    `json:"create_person"`
-	UpdateDate   time.Time `json:"update_date"`
-	UpdatePerson string    `json:"update_person"`
+	gorm.Model
+	Title        string
+	Description  string
+	MediaId string
+	ReplyId string `gorm:"column:reply_id"`
+}
+
+
+
+func _listPageReplyVedio(status bool, replyId string) ([]*KeywordsReply, error) {
+	var pages []*KeywordsReply
+	var err error
+	if status {
+		err = common.DB.Where("status = ?", StatusNormal).Where("key = ? ", replyId).Find(&pages).Error
+	} else {
+		err = common.DB.Where("key = ? ", replyId).Find(&pages).Error
+	}
+	return pages, err
+}
+
+func FindAllKeysReplyVedioPage(replyId string) ([]*KeywordsReply, error) {
+	return _listPageReplyVedio(true, replyId)
 }

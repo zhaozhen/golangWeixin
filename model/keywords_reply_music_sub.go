@@ -1,28 +1,39 @@
 package model
 
 import (
-	"time"
 	"golangWeixin/common"
+	"github.com/jinzhu/gorm"
 )
 
 type KeywordsReplyMusicSub struct {
-	ID           uint      `gorm:"primary_key" json:"id"`
-	Title        string    `json:"title"`
-	Description  string    `json:"description"`
-	MusicUrl     string    `json:"music_url"`
-	HqMusicUrl   string    `json:"hq_music_url"`
-	ThumbMediaId string    `json:"thumb_media_id"`
-	Status       int       `json:"status"`
-	CreatDate    time.Time `json:"creat_date" time_format:"sql_datetime" time_utc:"false"`
-	CreatePerson string    `json:"create_person"`
-	UpdateDate   time.Time `json:"update_date"`
-	DeleteAt     time.Time `json:"delete_at"`
-	UpdatePerson string    `json:"update_person"`
+	gorm.Model
+	Title        string `gorm:"column:title"`
+	Description  string `gorm:"column:description"`
+	MusicUrl     string `gorm:"column:music_url"`
+	HqMusicUrl   string `gorm:"column:hq_music_url"`
+	ThumbMediaId string `gorm:"column:thumb_media_id"`
+	ReplyId      string `gorm:"column:reply_id"`
 }
 
+func (keyReplyMusic *KeywordsReplyMusicSub) Insert() error {
+	return common.DB.Create(keyReplyMusic).Error
+}
 
-func (keywordsReplyMusicSub KeywordsReplyMusicSub) findAll()([]KeywordsReply){
-	reply := make([]KeywordsReply, 0)
-	common.DB.Where("status = ?" ,StatusNormal).Find(&reply);
-	return reply;
+func (keyReplyMusic *KeywordsReplyMusicSub) Update() error {
+	return common.DB.Save(keyReplyMusic).Error
+}
+
+func _listPageReplyMusic(status bool, replyId string) ([]*KeywordsReply, error) {
+	var pages []*KeywordsReply
+	var err error
+	if status {
+		err = common.DB.Where("status = ?", StatusNormal).Where("key = ? ", replyId).Find(&pages).Error
+	} else {
+		err = common.DB.Where("key = ? ", replyId).Find(&pages).Error
+	}
+	return pages, err
+}
+
+func FindAllKeysReplyMusicPage(replyId string) ([]*KeywordsReply, error) {
+	return _listPageReplyMusic(true, replyId)
 }
