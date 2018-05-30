@@ -40,6 +40,17 @@ func _listPage(status bool, key string,page int,limit int) ([]*KeywordsReply, er
 	return pages, err
 }
 
+func FindByOne(isIgnoreStatus bool,Id string)(*KeywordsReply, error)  {
+	var key *KeywordsReply
+	var err error
+	if isIgnoreStatus {
+		err = common.DB.Where("status = ?", StatusNormal).Where("id = ? ", Id).Find(&key).Error
+	}else{
+		err = common.DB.Where("id = ? ", Id).Find(&key).Error
+	}
+	return key,err
+}
+
 // 按道理这个样子只是单个创建，如果多个操作要涉及事物的操作，用的再说
 func (keyReply *KeywordsReply) Insert() error {
 	return common.DB.Create(keyReply).Error

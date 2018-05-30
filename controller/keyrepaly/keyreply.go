@@ -115,23 +115,92 @@ func KeyReplyAdd(c *gin.Context) {
 		keyReplyAddfunc(&keyReplyVo)
 
 	case model.KeywordsReplyMsgVideo:
-		//1,保存关机那字
-		_,err:=keyReplyAddfunc(&keyReplyVo)
+		//1,保存关键字
+		key,err:=keyReplyAddfunc(&keyReplyVo)
 		if err!=nil {
 			common.SendErrJSON("保存失败")
 		}
-
-
+		var keyReplayVideo model.KeywordsReplyVideoSub
+		data, err := msgpack.Marshal(&keyReplyVo.KeyReplyMusicVo)
+		if err == nil {
+			fmt.Println("err:", "序列化出错")
+		}
+		err = msgpack.Unmarshal(data, &keyReplayVideo)
+		fmt.Println("err:", "解序列化出错")
+		if err != nil {
+			panic(err)
+		}
+		//2：填充数据
+		keyReplayVideo.CreatedAt = time.Now()
+		keyReplayVideo.CreatedPerson = model.SystemUser
+		keyReplayVideo.Status = model.StatusNormal
+		keyReplayVideo.ReplyId=key.ID
+		//3：新增数据
+		keyReplayVideo.Insert()
 
 		// 2：video
 	case model.KeywordsReplyMsgMusic:
-		// 3：music
+
+		key,err:=keyReplyAddfunc(&keyReplyVo)
+		if err!=nil {
+			common.SendErrJSON("保存失败")
+		}
+		var keyReplyMusic model.KeywordsReplyMusicSub
+		data, err := msgpack.Marshal(&keyReplyVo.KeyReplyMusicVo)
+		if err == nil {
+			fmt.Println("err:", "序列化出错")
+		}
+		err = msgpack.Unmarshal(data, &keyReplyMusic)
+		fmt.Println("err:", "解序列化出错")
+		if err != nil {
+			panic(err)
+		}
+		//2：填充数据
+		keyReplyMusic.CreatedAt = time.Now()
+		keyReplyMusic.CreatedPerson = model.SystemUser
+		keyReplyMusic.Status = model.StatusNormal
+		keyReplyMusic.ReplyId=key.ID
+		//3：新增数据
+		keyReplyMusic.Insert()
 		break //可以添加
+
 	case model.KeywordsReplyMsgNews:
 		// 4：news
+
+		key,err:=keyReplyAddfunc(&keyReplyVo)
+		if err!=nil {
+			common.SendErrJSON("保存失败")
+		}
+		var keyReplayVideos []model.KeywordsReplyNewsSub
+		data, err := msgpack.Marshal(&keyReplyVo.KeyReplyNewsVos)
+		if err == nil {
+			fmt.Println("err:", "序列化出错")
+		}
+		err = msgpack.Unmarshal(data, &keyReplayVideos)
+		fmt.Println("err:", "解序列化出错")
+		if err != nil {
+			panic(err)
+		}
+		//2：填充数据
+		for _, value := range keyReplayVideos {
+			value.CreatedAt = time.Now()
+			value.CreatedPerson = model.SystemUser
+			value.Status = model.StatusNormal
+			value.ReplyId=key.ID
+			//3：新增数据
+			value.Insert()
+		}
+
 	default:
 		SendErrJSON("你有毒？", c)
 	}
+
+
+	c.JSON(http.StatusOK, gin.H{
+		"errNo": common.ErrorCode.SUCCESS,
+		"msg":   "success",
+		"data": "success",
+	})
 
 }
 
@@ -144,7 +213,7 @@ func keyReplyAddfunc(key *KeyReplyVo) (*model.KeywordsReply, error) {
 		return nil, err
 	}
 	err = msgpack.Unmarshal(data, &keyReply)
-	fmt.Println("err:", "结序列化出错")
+	fmt.Println("err:", "解序列化出错")
 	if err != nil {
 		panic(err)
 	}
@@ -156,5 +225,17 @@ func keyReplyAddfunc(key *KeyReplyVo) (*model.KeywordsReply, error) {
 	keyReply.Insert()
 
 	return &keyReply, nil
+}
+
+//得到对应的子表记录
+func getKeyReplySubsfunc(c *gin.Context){
+	//
+	//replyId, exists := c.Get("reply_id")
+	//if exists {
+	//	findByOne
+	//}else{
+	//	common.SendErrJSON("保存失败")
+	//}
+
 }
 

@@ -7,7 +7,7 @@ import (
 
 type Model struct {
 	gorm.Model
-	ID     uint `gorm:"primary_key;column:id"`
+	ID     string `gorm:"primary_key;column:id"`
 	Status int  `gorm:"column:status"`
 	//CreatedAt     time.Time  `gorm:"column:created_at"`
 	CreatedPerson string `gorm:"column:created_person"`

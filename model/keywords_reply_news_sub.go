@@ -1,12 +1,11 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
 	"golangWeixin/common"
 )
 
 type KeywordsReplyNewsSub struct {
-	gorm.Model
+	Model
 	Title       string
 	Description string
 	PicUrl      string
@@ -28,5 +27,13 @@ func _listPageReplyNews(status bool, replyId string) ([]*KeywordsReply, error) {
 }
 
 func FindAllKeysReplyNewsPage(replyId string) ([]*KeywordsReply, error) {
-	return _listPageReplyNews(true, replyId);
+	return _listPageReplyNews(true, replyId)
+}
+
+func (keyReplyVideo *KeywordsReplyNewsSub) Insert() error {
+	return common.DB.Create(keyReplyVideo).Error
+}
+
+func (keyReplyVideo *KeywordsReplyNewsSub) Update() error {
+	return common.DB.Save(keyReplyVideo).Error
 }

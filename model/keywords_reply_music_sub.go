@@ -2,11 +2,10 @@ package model
 
 import (
 	"golangWeixin/common"
-	"github.com/jinzhu/gorm"
 )
 
 type KeywordsReplyMusicSub struct {
-	gorm.Model
+	Model
 	Title        string `gorm:"column:title"`
 	Description  string `gorm:"column:description"`
 	MusicUrl     string `gorm:"column:music_url"`
