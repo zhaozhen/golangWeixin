@@ -36,3 +36,15 @@ func _listPageReplyMusic(status bool, replyId string) ([]*KeywordsReply, error) 
 func FindAllKeysReplyMusicPage(replyId string) ([]*KeywordsReply, error) {
 	return _listPageReplyMusic(true, replyId)
 }
+
+
+func FindKeywordsReplyMusicSubByReplyId(validStatus bool,Id string)(*KeywordsReplyMusicSub, error)  {
+	var keySub *KeywordsReplyMusicSub
+	var err error
+	if validStatus {
+		err = common.DB.Where("status = ?", StatusNormal).Where("reply_id = ? ", Id).Find(&keySub).Error
+	}else{
+		err = common.DB.Where("id = ? ", Id).Find(&keySub).Error
+	}
+	return keySub,err
+}

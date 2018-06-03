@@ -37,3 +37,15 @@ func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Insert() error {
 func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Update() error {
 	return common.DB.Save(keywordsReplyVideoSub).Error
 }
+
+
+func FindKeywordsReplyVideoSubByReplyId(validStatus bool,Id string)(*KeywordsReplyVideoSub, error)  {
+	var keySub *KeywordsReplyVideoSub
+	var err error
+	if validStatus {
+		err = common.DB.Where("status = ?", StatusNormal).Where("reply_id = ? ", Id).Find(&keySub).Error
+	}else{
+		err = common.DB.Where("id = ? ", Id).Find(&keySub).Error
+	}
+	return keySub,err
+}

@@ -20,10 +20,12 @@ func Route(router *gin.Engine) {
 		api.POST("/register", user.Register)
 		api.POST("/signout", middleware.SigninRequired,
 			user.Signout)
-		api.GET("/users",user.Users)
-		api.POST("/user",user.AddAndUpdateUser)
-		api.GET("/key_replys",keyrepaly.KeyRpeyls)
-
+		api.GET("/users", user.Users)
+		api.POST("/user", user.AddAndUpdateUser)
+		api.GET("/keyReplys", keyrepaly.KeyRpeyls)
+		api.POST("/reply", keyrepaly.KeyReplyAdd)
+		api.GET("/reply", keyrepaly.KeyReplyUpdate)
+		api.DELETE("/reply", keyrepaly.KeyReplyAdd)
 	}
 }
 	//	api.POST("/signin", user.Signin)

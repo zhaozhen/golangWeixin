@@ -6,7 +6,7 @@ import (
 
 type KeywordsReply struct {
 	Model
-	Key     string `gorm:"column:key"`
+	KeyWord string `gorm:"column:key_word"`
 	MsgType int    `gorm:"column:msg_type"` // text,image,voice, --video,music,news
 	Value   string `gorm:"column:value"`
 }
@@ -33,17 +33,17 @@ func _listPage(status bool, key string,page int,limit int) ([]*KeywordsReply, er
 	var pages []*KeywordsReply
 	var err error
 	if status {
-		err = common.DB.Where("status = ?", StatusNormal).Where("key like ? ", "%"+key+"%").Offset(page * limit).Limit(limit).Find(&pages).Error
+		err = common.DB.Where("status = ?", StatusNormal).Where(" key_word like ? ", "%"+key+"%").Offset(page * limit).Limit(limit).Find(&pages).Error
 	} else {
-		err = common.DB.Where("key like ? ", "%"+key+"%").Offset(page * limit).Limit(limit).Find(&pages).Error
+		err = common.DB.Where(" key_word like ? ", "%"+key+"%").Offset(page * limit).Limit(limit).Find(&pages).Error
 	}
 	return pages, err
 }
 
-func FindByOne(isIgnoreStatus bool,Id string)(*KeywordsReply, error)  {
+func FindKeyWordReplyByOne(validStatus bool,Id string)(*KeywordsReply, error)  {
 	var key *KeywordsReply
 	var err error
-	if isIgnoreStatus {
+	if validStatus {
 		err = common.DB.Where("status = ?", StatusNormal).Where("id = ? ", Id).Find(&key).Error
 	}else{
 		err = common.DB.Where("id = ? ", Id).Find(&key).Error
