@@ -46,3 +46,15 @@ func (this Model) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(tmpStudent)
 }
+
+//crud  没有范型这样子做就没意思了
+//func FindOne(model *interface{},validStatus bool,Id string)(interface{}, error)  {
+//	//var key *KeywordsReply
+//	var err error
+//	if validStatus {
+//		err = common.DB.Where("status = ?", StatusNormal).Where("id = ? ", Id).Find(&model).Error
+//	}else{
+//		err = common.DB.Where("id = ? ", Id).Find(&model).Error
+//	}
+//	return model,err
+//}

@@ -2,6 +2,7 @@ package model
 
 import (
 	"golangWeixin/common"
+	"time"
 )
 
 type KeywordsReplyMusicSub struct {
@@ -14,14 +15,26 @@ type KeywordsReplyMusicSub struct {
 	ReplyId      string `gorm:"column:reply_id"`
 }
 
-func (keyReplyMusic *KeywordsReplyMusicSub) Insert() error {
+func (keyReplyMusic *KeywordsReplyMusicSub) Insert(person string) error {
+	keyReplyMusic.CreatedAt = time.Now()
+	keyReplyMusic.CreatedPerson = person
+	keyReplyMusic.Status = StatusNormal
 	return common.DB.Create(keyReplyMusic).Error
 }
 
-func (keyReplyMusic *KeywordsReplyMusicSub) Update() error {
+func (keyReplyMusic *KeywordsReplyMusicSub) Update(person string) error {
+	keyReplyMusic.UpdatedPerson = person
+	keyReplyMusic.UpdatedAt = time.Now()
 	return common.DB.Save(keyReplyMusic).Error
 }
 
+func (keyReplyMusic *KeywordsReplyMusicSub) Delete(person string) error {
+	delteDate := time.Now()
+	keyReplyMusic.DeletedAt = &delteDate
+	keyReplyMusic.DeletedPerson = person
+	keyReplyMusic.Status = StatusDelete
+	return common.DB.Save(keyReplyMusic).Error
+}
 func _listPageReplyMusic(status bool, replyId string) ([]*KeywordsReply, error) {
 	var pages []*KeywordsReply
 	var err error

@@ -2,6 +2,7 @@ package model
 
 import (
 	"golangWeixin/common"
+	"time"
 )
 
 type KeywordsReply struct {
@@ -40,7 +41,7 @@ func _listPage(status bool, key string,page int,limit int) ([]*KeywordsReply, er
 	return pages, err
 }
 
-func FindKeyWordReplyByOne(validStatus bool,Id string)(*KeywordsReply, error)  {
+func FindKeyWordReplyByOne(validStatus bool,Id int)(*KeywordsReply, error)  {
 	var key *KeywordsReply
 	var err error
 	if validStatus {
@@ -52,11 +53,26 @@ func FindKeyWordReplyByOne(validStatus bool,Id string)(*KeywordsReply, error)  {
 }
 
 // 按道理这个样子只是单个创建，如果多个操作要涉及事物的操作，用的再说
-func (keyReply *KeywordsReply) Insert() error {
+func (keyReply *KeywordsReply) Insert(person string) error {
+	keyReply.CreatedAt = time.Now()
+	keyReply.CreatedPerson = person
+	keyReply.Status = StatusNormal
 	return common.DB.Create(keyReply).Error
 }
 
+
 // update
-func (keyreply *KeywordsReply) Update() error {
-	return common.DB.Save(keyreply).Error
+func (keyReply *KeywordsReply) Update(person string) error {
+	keyReply.UpdatedPerson = person
+	keyReply.UpdatedAt = time.Now()
+	return common.DB.Save(keyReply).Error
+}
+
+
+func (keyReply *KeywordsReply) Delete(person string) error {
+	delteDate := time.Now()
+	keyReply.DeletedAt = &delteDate
+	keyReply.DeletedPerson = person
+	keyReply.Status = StatusDelete
+	return common.DB.Save(keyReply).Error
 }

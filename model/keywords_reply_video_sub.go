@@ -2,6 +2,7 @@ package model
 
 import (
 	"golangWeixin/common"
+	"time"
 )
 
 type KeywordsReplyVideoSub struct {
@@ -30,14 +31,26 @@ func FindAllKeysReplyVedioPage(replyId string) ([]*KeywordsReply, error) {
 }
 
 
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Insert() error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Insert(person string) error {
+	keywordsReplyVideoSub.CreatedAt = time.Now()
+	keywordsReplyVideoSub.CreatedPerson = person
+	keywordsReplyVideoSub.Status = StatusNormal
 	return common.DB.Create(keywordsReplyVideoSub).Error
 }
 
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Update() error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Update(person string) error {
+	keywordsReplyVideoSub.UpdatedPerson = person
+	keywordsReplyVideoSub.UpdatedAt = time.Now()
 	return common.DB.Save(keywordsReplyVideoSub).Error
 }
 
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Delete(person string) error {
+	delteDate := time.Now()
+	keywordsReplyVideoSub.DeletedAt = &delteDate
+	keywordsReplyVideoSub.DeletedPerson = person
+	keywordsReplyVideoSub.Status = StatusDelete
+	return common.DB.Save(keywordsReplyVideoSub).Error
+}
 
 func FindKeywordsReplyVideoSubByReplyId(validStatus bool,Id string)(*KeywordsReplyVideoSub, error)  {
 	var keySub *KeywordsReplyVideoSub

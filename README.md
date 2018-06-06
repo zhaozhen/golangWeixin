@@ -10,3 +10,5 @@ err = json.NewDecoder(resp.Body).Decode(value)
 区别：
 当来自 io.Reader stream 时就选用 json.Decoder
 JSON 数据本来就在内存里，就选用 json.Unmarshal
+
+- 没有范型，只能写好多代码
