@@ -7,10 +7,12 @@ import (
 
 type KeywordsReplyVideoSub struct {
 	Model
-	Title        string
-	Description  string
-	MediaId string
-	ReplyId string `gorm:"column:reply_id"`
+	//ID          int `gorm:"primary_key;column:id"`
+	//Status      int    `gorm:"column:status"`
+	Title       string
+	Description string
+	MediaId     string
+	ReplyId     int `gorm:"column:reply_id"`
 }
 
 
@@ -52,7 +54,7 @@ func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Delete(person string) error 
 	return common.DB.Save(keywordsReplyVideoSub).Error
 }
 
-func FindKeywordsReplyVideoSubByReplyId(validStatus bool,Id string)(*KeywordsReplyVideoSub, error)  {
+func FindKeywordsReplyVideoSubByReplyId(validStatus bool,Id int)(*KeywordsReplyVideoSub, error)  {
 	var keySub *KeywordsReplyVideoSub
 	var err error
 	if validStatus {

@@ -12,7 +12,7 @@ type KeywordsReplyMusicSub struct {
 	MusicUrl     string `gorm:"column:music_url"`
 	HqMusicUrl   string `gorm:"column:hq_music_url"`
 	ThumbMediaId string `gorm:"column:thumb_media_id"`
-	ReplyId      string `gorm:"column:reply_id"`
+	ReplyId      int `gorm:"column:reply_id"`
 }
 
 func (keyReplyMusic *KeywordsReplyMusicSub) Insert(person string) error {
@@ -51,7 +51,7 @@ func FindAllKeysReplyMusicPage(replyId string) ([]*KeywordsReply, error) {
 }
 
 
-func FindKeywordsReplyMusicSubByReplyId(validStatus bool,Id string)(*KeywordsReplyMusicSub, error)  {
+func FindKeywordsReplyMusicSubByReplyId(validStatus bool,Id int)(*KeywordsReplyMusicSub, error)  {
 	var keySub *KeywordsReplyMusicSub
 	var err error
 	if validStatus {

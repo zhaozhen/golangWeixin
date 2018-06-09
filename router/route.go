@@ -15,7 +15,6 @@ func Route(router *gin.Engine) {
 
 	api := router.Group(apiPrefix, middleware.RefreshTokenCookie)
 	{
-		api.GET("/test",keyrepaly.Test)
 		api.GET("/weixin.action", weixin.WeixinAction)
 		api.POST("/signin", user.Signin)
 		api.POST("/register", user.Register)
@@ -25,8 +24,14 @@ func Route(router *gin.Engine) {
 		api.POST("/user", user.AddAndUpdateUser)
 		api.GET("/keyReplys", keyrepaly.KeyRpeyls)
 		//更新和新增使用同一个接口
-		api.POST("/reply", keyrepaly.KeyReplyAdd)
-		api.DELETE("/reply", keyrepaly.KeyReplyAdd)
+		api.POST("/keyReply", keyrepaly.KeyReplyAddAndUpdate)
+		//删除方法
+		api.DELETE("/keyReply", keyrepaly.KeyReplyAddAndUpdate)
+
+
+
+		api.GET("/test", keyrepaly.Test)
+
 	}
 }
 	//	api.POST("/signin", user.Signin)

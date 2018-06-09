@@ -13,13 +13,13 @@ import (
 )
 
 type KeyReplyVo struct {
-	ID              int             `json:"id"`
+	ID              int              `json:"id"`
 	Key             string           `json:"key"`
-	MsgType         int              `json:"msg_type"`     // text,image,voice, --video,music,news
+	MsgType         int              `json:"msg_type"` // text,image,voice, --video,music,news
 	Value           string           `json:"value"`
-	KeyReplyNewsVos []KeyReplyNewsVo `json:"keyReplyNewsVos"`
-	KeyReplyMusicVo                  `json:"KeyReplyMusicVo"`
-	KeyReplyVedioVo                  `json:"KeyReplyVedioVo"`
+	KeyReplyNewsVos []KeyReplyNewsVo `json:"key_reply_news_vos"`
+	KeyReplyMusicVo KeyReplyMusicVo  `json:"Key_reply_music_vo"`
+	KeyReplyVedioVo KeyReplyVedioVo  `json:"Key_reply_vedio_vo"`
 	//HttpMethod      string           `json:"method"`
 }
 
@@ -66,12 +66,110 @@ func KeyRpeyls(c *gin.Context) {
 		return
 	}
 
+	// entity_model
+	var keyReplys []KeyReplyVo
+
+	for _, entity := range reply {
+		var keyReply KeyReplyVo
+		data, err := msgpack.Marshal(&entity)
+		if err != nil {
+			common.SendErrJSON("序列化出错", c)
+			return
+		}
+		err = msgpack.Unmarshal(data, &keyReply)
+		if err != nil {
+			common.SendErrJSON("解序列化出错", c)
+			return
+		}
+		//序列化之后清除掉空值
+		//&keyReply.KeyReplyMusicVo=nil
+		//&keyReply.KeyReplyVedioVo=nil
+
+		//添加相应的子类
+
+		switch entity.MsgType {
+		case model.KeywordsReplyMsgVideo:
+			var keyReplyVideo KeyReplyVedioVo
+			//查找数据
+			video, err := model.FindKeywordsReplyVideoSubByReplyId(true, entity.ID)
+			if err != nil {
+				common.SendErrJSON("查找子类video出错", c)
+			}
+
+			//序列化成data
+			data, err := msgpack.Marshal(&video)
+			if err != nil {
+				common.SendErrJSON("序列化出错", c)
+			}
+			err = msgpack.Unmarshal(data, &keyReplyVideo)
+			if err != nil {
+				common.SendErrJSON("解序列化出错", c)
+			}
+			//复值
+			keyReply.KeyReplyVedioVo = keyReplyVideo
+
+			//添加相应的切片
+			keyReplys = append(keyReplys, keyReply)
+			break
+		case model.KeywordsReplyMsgMusic:
+
+			var keyReplyMusic KeyReplyMusicVo
+			//查找数据
+			music, err := model.FindKeywordsReplyMusicSubByReplyId(true, entity.ID)
+			if err != nil {
+				common.SendErrJSON("查找子类video出错", c)
+			}
+
+			//序列化成data
+			data, err := msgpack.Marshal(&music)
+			if err != nil {
+				common.SendErrJSON("序列化出错", c)
+			}
+			err = msgpack.Unmarshal(data, &keyReplyMusic)
+			if err != nil {
+				common.SendErrJSON("解序列化出错", c)
+			}
+			//复值
+			keyReply.KeyReplyMusicVo = keyReplyMusic
+
+			//添加相应的切片
+			keyReplys = append(keyReplys, keyReply)
+			break
+		case model.KeywordsReplyMsgNews:
+
+			var keyReplyNews []KeyReplyNewsVo
+			//查找数据
+			news, err := model.FindKeywordsReplyNewsSubByReplyId(true, entity.ID)
+			if err != nil {
+				common.SendErrJSON("查找子类video出错", c)
+			}
+
+			//序列化成data
+			data, err := msgpack.Marshal(&news)
+			if err != nil {
+				common.SendErrJSON("序列化出错", c)
+			}
+			err = msgpack.Unmarshal(data, &keyReplyNews)
+			if err != nil {
+				common.SendErrJSON("解序列化出错", c)
+			}
+			//复值
+			keyReply.KeyReplyNewsVos = keyReplyNews
+			//添加相应的切片
+			keyReplys = append(keyReplys, keyReply)
+			break
+		}
+		//添加相应的切片
+		keyReplys = append(keyReplys, keyReply)
+
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"errNo": common.ErrorCode.SUCCESS,
 		"msg":   "success",
 		"data": gin.H{
-			"keyplies": reply,
-			"total":len(reply),
+			"keyplies": keyReplys,
+			"total":    len(keyReplys),
 		},
 	})
 
@@ -87,6 +185,11 @@ func Test(c *gin.Context){
 	//	"msg":   "success",
 	//	"data": table,
 	//})
+	c.JSON(http.StatusOK, gin.H{
+		"errNo": common.ErrorCode.SUCCESS,
+		"msg":   "success",
+		"data":  "success",
+	})
 }
 
 

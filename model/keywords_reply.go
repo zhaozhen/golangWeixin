@@ -7,7 +7,9 @@ import (
 
 type KeywordsReply struct {
 	Model
-	KeyWord string `gorm:"column:key_word"`
+	//ID      int `gorm:"primary_key;column:id"`
+	//Status  int    `gorm:"column:status"`
+	Key     string `gorm:"column:key_word"`
 	MsgType int    `gorm:"column:msg_type"` // text,image,voice, --video,music,news
 	Value   string `gorm:"column:value"`
 }

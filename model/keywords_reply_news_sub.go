@@ -7,11 +7,13 @@ import (
 
 type KeywordsReplyNewsSub struct {
 	Model
+	//ID          int `gorm:"primary_key;column:id"`
+	//Status      int    `gorm:"column:status"`
 	Title       string
 	Description string
 	PicUrl      string
 	Url         string
-	ReplyId     string `gorm:"column:reply_id"`
+	ReplyId     int `gorm:"column:reply_id"`
 }
 
 func _listPageReplyNews(status bool, replyId string) ([]*KeywordsReply, error) {
@@ -50,7 +52,7 @@ func (keyReplySub *KeywordsReplyNewsSub) Delete(person string) error {
 	return common.DB.Save(keyReplySub).Error
 }
 
-func FindKeywordsReplyNewsSubByReplyId(validStatus bool, Id string) (*[]KeywordsReplyNewsSub, error) {
+func FindKeywordsReplyNewsSubByReplyId(validStatus bool, Id int) (*[]KeywordsReplyNewsSub, error) {
 	var keySub *[]KeywordsReplyNewsSub
 	var err error
 	if validStatus {
