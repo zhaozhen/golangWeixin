@@ -7,11 +7,11 @@ import (
 
 type Model struct {
 	//gorm.Model 嵌套太深，不要了
-	ID            int     `gorm:"primary_key;column:id"`
+	ID            int        `gorm:"primary_key;column:id"`
 	Status        int        `gorm:"column:status"`
 	CreatedAt     time.Time  `gorm:"column:created_at"`
 	CreatedPerson string     `gorm:"column:created_person"`
-	UpdatedAt     time.Time  `gorm:"column:updated_at"`
+	UpdatedAt     *time.Time `gorm:"column:updated_at"`
 	UpdatedPerson string     `gorm:"column:updated_person"`
 	DeletedAt     *time.Time `gorm:"column:deleted_at"`
 	DeletedPerson string     `gorm:"column:deleted_person"`

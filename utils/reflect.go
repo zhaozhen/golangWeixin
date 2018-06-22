@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"reflect"
+	"github.com/vmihailenco/msgpack"
 )
 
 func setFiled(obj interface{},name string,value interface{})error{
@@ -37,6 +38,20 @@ func SetStructByJSON(obj interface{},mapData map[string]interface{}) error {
 			fmt.Println(err.Error())
 			return err;
 		}
+	}
+	return nil
+}
+
+func TransformToOther(in interface{}, out interface{}) error {
+	// 序列化参数
+	data, err := msgpack.Marshal(in)
+	if err != nil {
+		return err
+	}
+	// 反序列化参数
+	err = msgpack.Unmarshal(data, out)
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -3,6 +3,7 @@ package model
 import (
 	"golangWeixin/common"
 	"time"
+	"github.com/jinzhu/gorm"
 )
 
 type KeywordsReplyVideoSub struct {
@@ -33,34 +34,35 @@ func FindAllKeysReplyVedioPage(replyId string) ([]*KeywordsReply, error) {
 }
 
 
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Insert(person string) error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Insert(tx *gorm.DB,person string) error {
 	keywordsReplyVideoSub.CreatedAt = time.Now()
 	keywordsReplyVideoSub.CreatedPerson = person
 	keywordsReplyVideoSub.Status = StatusNormal
-	return common.DB.Create(keywordsReplyVideoSub).Error
+	return tx.Save(keywordsReplyVideoSub).Error
 }
 
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Update(person string) error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Update(tx *gorm.DB,person string) error {
+	updateDate := time.Now()
 	keywordsReplyVideoSub.UpdatedPerson = person
-	keywordsReplyVideoSub.UpdatedAt = time.Now()
-	return common.DB.Save(keywordsReplyVideoSub).Error
+	keywordsReplyVideoSub.UpdatedAt = &updateDate
+	return tx.Update(keywordsReplyVideoSub).Error
 }
 
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Delete(person string) error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Delete(tx *gorm.DB,person string) error {
 	delteDate := time.Now()
 	keywordsReplyVideoSub.DeletedAt = &delteDate
 	keywordsReplyVideoSub.DeletedPerson = person
 	keywordsReplyVideoSub.Status = StatusDelete
-	return common.DB.Save(keywordsReplyVideoSub).Error
+	return tx.Update(keywordsReplyVideoSub).Error
 }
 
 func FindKeywordsReplyVideoSubByReplyId(validStatus bool,Id int)(*KeywordsReplyVideoSub, error)  {
-	var keySub *KeywordsReplyVideoSub
+	var keySub KeywordsReplyVideoSub
 	var err error
 	if validStatus {
 		err = common.DB.Where("status = ?", StatusNormal).Where("reply_id = ? ", Id).Find(&keySub).Error
 	}else{
 		err = common.DB.Where("id = ? ", Id).Find(&keySub).Error
 	}
-	return keySub,err
+	return &keySub,err
 }

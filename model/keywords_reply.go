@@ -3,15 +3,18 @@ package model
 import (
 	"golangWeixin/common"
 	"time"
+	"github.com/jinzhu/gorm"
 )
 
 type KeywordsReply struct {
 	Model
 	//ID      int `gorm:"primary_key;column:id"`
 	//Status  int    `gorm:"column:status"`
-	Key     string `gorm:"column:key_word"`
-	MsgType int    `gorm:"column:msg_type"` // text,image,voice, --video,music,news
-	Value   string `gorm:"column:value"`
+	Key       string `gorm:"column:key_word"`
+	MsgType   int    `gorm:"column:msg_type"` // text,image,voice, --video,music,news
+	Value     string `gorm:"column:value"`
+	AccountId string `gorm:"column:account_id"`
+	RawId     string `gorm:"column:raw_id"`
 }
 
 //处理表名复数
@@ -28,53 +31,58 @@ const (
 	KeywordsReplyMsgNews  = 5
 )
 
-func FindAllKeysReplyPage(key string,page int,limit int) ([]*KeywordsReply, error) {
+func FindAllKeysReplyPage(key string,page int,limit int) (*[]KeywordsReply, error) {
 	return _listPage(true, key,page,limit)
 }
 
-func _listPage(status bool, key string,page int,limit int) ([]*KeywordsReply, error) {
-	var pages []*KeywordsReply
+func _listPage(status bool, key string,page int,limit int) (*[]KeywordsReply, error) {
+	var pages []KeywordsReply
 	var err error
 	if status {
 		err = common.DB.Where("status = ?", StatusNormal).Where(" key_word like ? ", "%"+key+"%").Offset(page * limit).Limit(limit).Find(&pages).Error
 	} else {
 		err = common.DB.Where(" key_word like ? ", "%"+key+"%").Offset(page * limit).Limit(limit).Find(&pages).Error
 	}
-	return pages, err
+	return &pages, err
 }
 
 func FindKeyWordReplyByOne(validStatus bool,Id int)(*KeywordsReply, error)  {
-	var key *KeywordsReply
+	var key KeywordsReply
 	var err error
 	if validStatus {
 		err = common.DB.Where("status = ?", StatusNormal).Where("id = ? ", Id).Find(&key).Error
 	}else{
 		err = common.DB.Where("id = ? ", Id).Find(&key).Error
 	}
-	return key,err
+	return &key,err
 }
 
 // 按道理这个样子只是单个创建，如果多个操作要涉及事物的操作，用的再说
-func (keyReply *KeywordsReply) Insert(person string) error {
+func (keyReply *KeywordsReply) Insert(tx *gorm.DB,person string) error {
 	keyReply.CreatedAt = time.Now()
 	keyReply.CreatedPerson = person
 	keyReply.Status = StatusNormal
-	return common.DB.Create(keyReply).Error
+	//冗余account_id
+	keyReply.AccountId="default"
+	keyReply.RawId="default"
+	return tx.Create(keyReply).Error
+	//return common.DB.Create(keyReply).Error
 }
 
 
 // update
-func (keyReply *KeywordsReply) Update(person string) error {
+func (keyReply *KeywordsReply) Update(tx *gorm.DB,person string) error {
+	updateDate := time.Now()
 	keyReply.UpdatedPerson = person
-	keyReply.UpdatedAt = time.Now()
-	return common.DB.Save(keyReply).Error
+	keyReply.UpdatedAt = &updateDate
+	return tx.Update(keyReply).Error
 }
 
 
-func (keyReply *KeywordsReply) Delete(person string) error {
+func (keyReply *KeywordsReply) Delete(tx *gorm.DB,person string) error {
 	delteDate := time.Now()
 	keyReply.DeletedAt = &delteDate
 	keyReply.DeletedPerson = person
 	keyReply.Status = StatusDelete
-	return common.DB.Save(keyReply).Error
+	return tx.Update(keyReply).Error
 }

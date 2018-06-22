@@ -3,6 +3,7 @@ package model
 import (
 	"golangWeixin/common"
 	"time"
+	"github.com/jinzhu/gorm"
 )
 
 type KeywordsReplyNewsSub struct {
@@ -31,34 +32,35 @@ func FindAllKeysReplyNewsPage(replyId string) ([]*KeywordsReply, error) {
 	return _listPageReplyNews(true, replyId)
 }
 
-func (keyReplySub *KeywordsReplyNewsSub) Insert(person string) error {
+func (keyReplySub *KeywordsReplyNewsSub) Insert(tx *gorm.DB,person string) error {
 	keyReplySub.CreatedAt = time.Now()
 	keyReplySub.CreatedPerson = person
 	keyReplySub.Status = StatusNormal
-	return common.DB.Create(keyReplySub).Error
+	return tx.Create(keyReplySub).Error
 }
 
-func (keyReplySub *KeywordsReplyNewsSub) Update(person string) error {
+func (keyReplySub *KeywordsReplyNewsSub) Update(tx *gorm.DB,person string) error {
+	updateDate := time.Now()
 	keyReplySub.UpdatedPerson = person
-	keyReplySub.UpdatedAt = time.Now()
-	return common.DB.Save(keyReplySub).Error
+	keyReplySub.UpdatedAt = &updateDate
+	return tx.Update(keyReplySub).Error
 }
 
-func (keyReplySub *KeywordsReplyNewsSub) Delete(person string) error {
+func (keyReplySub *KeywordsReplyNewsSub) Delete(tx *gorm.DB,person string) error {
 	delteDate := time.Now()
 	keyReplySub.DeletedAt = &delteDate
 	keyReplySub.DeletedPerson = person
 	keyReplySub.Status = StatusDelete
-	return common.DB.Save(keyReplySub).Error
+	return tx.Update(keyReplySub).Error
 }
 
 func FindKeywordsReplyNewsSubByReplyId(validStatus bool, Id int) (*[]KeywordsReplyNewsSub, error) {
-	var keySub *[]KeywordsReplyNewsSub
+	var keySub []KeywordsReplyNewsSub
 	var err error
 	if validStatus {
 		err = common.DB.Where("status = ?", StatusNormal).Where("reply_id = ? ", Id).Find(&keySub).Error
 	} else {
 		err = common.DB.Where("id = ? ", Id).Find(&keySub).Error
 	}
-	return keySub, err
+	return &keySub, err
 }
