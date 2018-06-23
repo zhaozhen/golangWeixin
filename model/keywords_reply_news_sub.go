@@ -36,14 +36,24 @@ func (keyReplySub *KeywordsReplyNewsSub) Insert(tx *gorm.DB,person string) error
 	keyReplySub.CreatedAt = time.Now()
 	keyReplySub.CreatedPerson = person
 	keyReplySub.Status = StatusNormal
-	return tx.Create(keyReplySub).Error
+	if err:=tx.Create(keyReplySub).Error;err!=nil{
+		tx.Rollback()
+		return err
+	}else {
+		return nil
+	}
 }
 
-func (keyReplySub *KeywordsReplyNewsSub) Update(tx *gorm.DB,person string) error {
+func (keyReplySub *KeywordsReplyNewsSub) Update(tx *gorm.DB, person string) error {
 	updateDate := time.Now()
 	keyReplySub.UpdatedPerson = person
 	keyReplySub.UpdatedAt = &updateDate
-	return tx.Update(keyReplySub).Error
+	if err := tx.Table("keywords_reply_news_sub").Where("reply_id = ? ", keyReplySub.ReplyId).Update(keyReplySub).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
 
 func (keyReplySub *KeywordsReplyNewsSub) Delete(tx *gorm.DB,person string) error {
@@ -51,7 +61,11 @@ func (keyReplySub *KeywordsReplyNewsSub) Delete(tx *gorm.DB,person string) error
 	keyReplySub.DeletedAt = &delteDate
 	keyReplySub.DeletedPerson = person
 	keyReplySub.Status = StatusDelete
-	return tx.Update(keyReplySub).Error
+	if err:=tx.Table("keywords_reply_news_sub").Where("reply_id = ? ",keyReplySub.ReplyId).Update(keyReplySub).Error;err!=nil{
+		return err
+	} else {
+		return nil
+	}
 }
 
 func FindKeywordsReplyNewsSubByReplyId(validStatus bool, Id int) (*[]KeywordsReplyNewsSub, error) {

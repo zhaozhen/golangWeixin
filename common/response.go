@@ -3,16 +3,10 @@ package common
 import (
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // SendErrJSON 有错误发生时，发送错误JSON
-func SendErrJSON(tx *gorm.DB,msg string, args ...interface{}) {
-	//如果有失误就回滚事务，随谈不太恰当，但是感觉比较节省代码
-	if tx != nil {
-		tx.Rollback()
-	}
-
+func SendErrJSON(msg string, args ...interface{}) {
 	if len(args) == 0 {
 		panic("缺少 *gin.Context")
 	}

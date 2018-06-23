@@ -21,27 +21,44 @@ func (KeywordsReplyMusicSub) TableName() string {
 	return "keywords_reply_music_sub"
 }
 
-func (keyReplyMusic *KeywordsReplyMusicSub) Insert(tx *gorm.DB,person string) error {
+func (keyReplyMusic *KeywordsReplyMusicSub) Insert(tx *gorm.DB, person string) error {
 	keyReplyMusic.CreatedAt = time.Now()
 	keyReplyMusic.CreatedPerson = person
 	keyReplyMusic.Status = StatusNormal
-	return tx.Create(keyReplyMusic).Error
+	if err := tx.Create(keyReplyMusic).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
 
 func (keyReplyMusic *KeywordsReplyMusicSub) Update(tx *gorm.DB,person string) error {
 	updateDate := time.Now()
 	keyReplyMusic.UpdatedPerson = person
 	keyReplyMusic.UpdatedAt = &updateDate
-	return tx.Update(keyReplyMusic).Error
+	if err:=tx.Table("keywords_reply_music_sub").Where("reply_id = ? ",keyReplyMusic.ReplyId).Update(keyReplyMusic).Error;err!=nil{
+		tx.Rollback()
+		return err
+	}else {
+		return nil
+	}
+
 }
 
-func (keyReplyMusic *KeywordsReplyMusicSub) Delete(tx *gorm.DB,person string) error {
+func (keyReplyMusic *KeywordsReplyMusicSub) Delete(tx *gorm.DB, person string) error {
 	delteDate := time.Now()
 	keyReplyMusic.DeletedAt = &delteDate
 	keyReplyMusic.DeletedPerson = person
 	keyReplyMusic.Status = StatusDelete
-	return tx.Update(keyReplyMusic).Error
+	if err := tx.Table("keywords_reply_music_sub").Where("reply_id = ? ", keyReplyMusic.ReplyId).Update(keyReplyMusic).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
+
 func _listPageReplyMusic(status bool, replyId string) (*[]KeywordsReply, error) {
 	var pages []KeywordsReply
 	var err error

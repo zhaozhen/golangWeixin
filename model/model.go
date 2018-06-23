@@ -6,7 +6,7 @@ import (
 )
 
 type Model struct {
-	//gorm.Model 嵌套太深，不要了
+	//gorm.Model //嵌套太深，不要了
 	ID            int        `gorm:"primary_key;column:id"`
 	Status        int        `gorm:"column:status"`
 	CreatedAt     time.Time  `gorm:"column:created_at"`

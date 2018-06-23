@@ -8,8 +8,6 @@ import (
 
 type KeywordsReplyVideoSub struct {
 	Model
-	//ID          int `gorm:"primary_key;column:id"`
-	//Status      int    `gorm:"column:status"`
 	Title       string
 	Description string
 	MediaId     string
@@ -33,27 +31,41 @@ func FindAllKeysReplyVedioPage(replyId string) ([]*KeywordsReply, error) {
 	return _listPageReplyVedio(true, replyId)
 }
 
-
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Insert(tx *gorm.DB,person string) error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Insert(tx *gorm.DB, person string) error {
 	keywordsReplyVideoSub.CreatedAt = time.Now()
 	keywordsReplyVideoSub.CreatedPerson = person
 	keywordsReplyVideoSub.Status = StatusNormal
-	return tx.Save(keywordsReplyVideoSub).Error
+	if err := tx.Save(keywordsReplyVideoSub).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
 
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Update(tx *gorm.DB,person string) error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Update(tx *gorm.DB, person string) error {
 	updateDate := time.Now()
 	keywordsReplyVideoSub.UpdatedPerson = person
 	keywordsReplyVideoSub.UpdatedAt = &updateDate
-	return tx.Update(keywordsReplyVideoSub).Error
+	if err := tx.Table("keywords_reply_video_sub").Where("reply_id = ? ", keywordsReplyVideoSub.ReplyId).Update(keywordsReplyVideoSub).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
 
-func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Delete(tx *gorm.DB,person string) error {
+func (keywordsReplyVideoSub *KeywordsReplyVideoSub) Delete(tx *gorm.DB, person string) error {
 	delteDate := time.Now()
 	keywordsReplyVideoSub.DeletedAt = &delteDate
 	keywordsReplyVideoSub.DeletedPerson = person
 	keywordsReplyVideoSub.Status = StatusDelete
-	return tx.Update(keywordsReplyVideoSub).Error
+	if err := tx.Table("keywords_reply_video_sub").Where("reply_id = ? ", keywordsReplyVideoSub.ReplyId).Update(keywordsReplyVideoSub).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
 
 func FindKeywordsReplyVideoSubByReplyId(validStatus bool,Id int)(*KeywordsReplyVideoSub, error)  {

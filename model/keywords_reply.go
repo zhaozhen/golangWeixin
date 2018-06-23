@@ -57,6 +57,15 @@ func FindKeyWordReplyByOne(validStatus bool,Id int)(*KeywordsReply, error)  {
 	return &key,err
 }
 
+func FindKeyWordReplyByKey(keyWord string) (*KeywordsReply, error) {
+	var key KeywordsReply
+	var err error
+	if err := common.DB.Where("status = ?", StatusNormal).Where("key_word = ? ", keyWord).Find(&key).Error; err != nil {
+		return nil, err
+	}
+	return &key, err
+}
+
 // 按道理这个样子只是单个创建，如果多个操作要涉及事物的操作，用的再说
 func (keyReply *KeywordsReply) Insert(tx *gorm.DB,person string) error {
 	keyReply.CreatedAt = time.Now()
@@ -65,24 +74,40 @@ func (keyReply *KeywordsReply) Insert(tx *gorm.DB,person string) error {
 	//冗余account_id
 	keyReply.AccountId="default"
 	keyReply.RawId="default"
-	return tx.Create(keyReply).Error
-	//return common.DB.Create(keyReply).Error
+	if err:=tx.Create(keyReply).Error;err!=nil{
+		tx.Rollback()
+		return err
+	}else {
+		return nil
+	}
+
 }
 
 
 // update
-func (keyReply *KeywordsReply) Update(tx *gorm.DB,person string) error {
+func (keyReply *KeywordsReply) Update(tx *gorm.DB, person string) error {
 	updateDate := time.Now()
 	keyReply.UpdatedPerson = person
 	keyReply.UpdatedAt = &updateDate
-	return tx.Update(keyReply).Error
+	//骚操作
+	//return tx.Model(&keyReply).Table("keywords_reply").UpdateColumn("key_word",keyReply.Key).UpdateColumn("msg_type",keyReply.MsgType).UpdateColumn("value",keyReply.Value).UpdateColumn("updated_person",person).Error
+	if err := tx.Table("keywords_reply").Where("id = ? ", keyReply.ID).Update(keyReply).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
 
-
-func (keyReply *KeywordsReply) Delete(tx *gorm.DB,person string) error {
+func (keyReply *KeywordsReply) Delete(tx *gorm.DB, person string) error {
 	delteDate := time.Now()
 	keyReply.DeletedAt = &delteDate
 	keyReply.DeletedPerson = person
 	keyReply.Status = StatusDelete
-	return tx.Update(keyReply).Error
+	if err := tx.Table("keywords_reply").Where("id = ? ", keyReply.ID).Update(keyReply).Error; err != nil {
+		tx.Rollback()
+		return err
+	} else {
+		return nil
+	}
 }
