@@ -159,6 +159,17 @@ func Test(c *gin.Context) {
 	//	"msg":   "success",
 	//	"data": table,
 	//})
+
+	var key model.KeywordsReply
+
+	//核武器
+	if err := model.FindOneByFiled("keywords_reply", "id", 15, &key); err != nil {
+		return
+	}
+
+	fmt.Printf(key.Value)
+
+
 	c.JSON(http.StatusOK, gin.H{
 		"errNo": common.ErrorCode.SUCCESS,
 		"msg":   "success",
@@ -180,12 +191,13 @@ func KeyReplyAddAndUpdate(c *gin.Context) {
 		return
 	}
 	// 新增更新的时候，重复的关键字判断
-	if keyReplyVo.ID != -1 {
-		if _, err := model.FindKeyWordReplyByKey(keyReplyVo.Key); err != nil && err != gorm.ErrRecordNotFound {
-			SendErrJSON( "重复的关键字", c)
+	if keyReplyVo.ID ==0 {
+		if _, err := model.FindKeyWordReplyByKey(keyReplyVo.Key); err != gorm.ErrRecordNotFound {
+			SendErrJSON("重复的关键字", c)
 			return
 		}
 	}
+
 
 	//新增有4类
 	//添加主表
@@ -231,20 +243,13 @@ func KeyReplyAddAndUpdate(c *gin.Context) {
 			break
 		case model.KeywordsReplyMsgMusic:
 			var keyReplyMusic model.KeywordsReplyMusicSub
-			if err := utils.TransformToOther(&keyReplyVo.KeyReplyMusicVo, &keyReplyMusic); err != nil {
-				common.SendErrJSON( "序列化出错", c)
-				return
-			}
+			keyReplyMusic.ReplyId=key.ID
 			keyReplyMusic.Delete(tx, model.SystemUser)
 			break
 		case model.KeywordsReplyMsgNews:
 			var keyReplayVideos []model.KeywordsReplyNewsSub
-			if err := utils.TransformToOther(&keyReplyVo.KeyReplyNewsVos, &keyReplayVideos); err != nil {
-				common.SendErrJSON( "序列化出错", c)
-				return
-			}
-
 			for _, value := range keyReplayVideos {
+				value.ReplyId=key.ID
 				value.Delete(tx, model.SystemUser)
 			}
 			break
@@ -269,7 +274,7 @@ func KeyReplyAddAndUpdate(c *gin.Context) {
 				common.SendErrJSON( "更新Video失败")
 			}
 		} else if keyReplyVo.ID == constant.Zero {
-			keyReplayVideo.ID = key.ID
+			keyReplayVideo.ReplyId = key.ID
 			err := keyReplayVideo.Insert(tx, model.SystemUser)
 			if err != nil {
 				common.SendErrJSON("新增Video失败")
@@ -296,7 +301,7 @@ func KeyReplyAddAndUpdate(c *gin.Context) {
 				common.SendErrJSON( "更新Video失败")
 			}
 		} else if keyReplyVo.ID == constant.Zero {
-			keyReplyMusic.ID = key.ID
+			keyReplyMusic.ReplyId = key.ID
 			err := keyReplyMusic.Insert(tx, model.SystemUser)
 			if err != nil {
 				common.SendErrJSON( "新增Video失败")
@@ -325,7 +330,7 @@ func KeyReplyAddAndUpdate(c *gin.Context) {
 					common.SendErrJSON( "更新Video失败")
 				}
 			} else if keyReplyVo.ID == constant.Zero {
-				value.ID = key.ID
+				value.ReplyId = key.ID
 				if err := value.Insert(tx, model.SystemUser); err != nil {
 					common.SendErrJSON( "新增Video失败")
 				}

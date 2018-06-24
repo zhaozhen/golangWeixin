@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/gin-gonic/gin/json"
 	"time"
+	"golangWeixin/common"
 )
 
 type Model struct {
@@ -58,3 +59,11 @@ func (this Model) MarshalJSON() ([]byte, error) {
 //	}
 //	return model,err
 //}
+
+// 没有范型 非常难受，只能试一下风骚的操作,
+func FindOneByFiled(tableName string, indexFile string, indexValue interface{}, in interface{}) (err error) {
+	if err := common.DB.Table(tableName).Where("status = ?", StatusNormal).Where(indexFile+" = ? ", indexValue).First(in).Error; err != nil {
+		return err
+	}
+	return nil
+}

@@ -31,11 +31,11 @@ const (
 	KeywordsReplyMsgNews  = 5
 )
 
-func FindAllKeysReplyPage(key string,page int,limit int) (*[]KeywordsReply, error) {
-	return _listPage(true, key,page,limit)
+func FindAllKeysReplyPage(key string, page int, limit int) (*[]KeywordsReply, error) {
+	return _listPage(true, key, page, limit)
 }
 
-func _listPage(status bool, key string,page int,limit int) (*[]KeywordsReply, error) {
+func _listPage(status bool, key string, page int, limit int) (*[]KeywordsReply, error) {
 	var pages []KeywordsReply
 	var err error
 	if status {
@@ -46,15 +46,15 @@ func _listPage(status bool, key string,page int,limit int) (*[]KeywordsReply, er
 	return &pages, err
 }
 
-func FindKeyWordReplyByOne(validStatus bool,Id int)(*KeywordsReply, error)  {
+func FindKeyWordReplyByOne(validStatus bool, Id int) (*KeywordsReply, error) {
 	var key KeywordsReply
 	var err error
 	if validStatus {
 		err = common.DB.Where("status = ?", StatusNormal).Where("id = ? ", Id).Find(&key).Error
-	}else{
+	} else {
 		err = common.DB.Where("id = ? ", Id).Find(&key).Error
 	}
-	return &key,err
+	return &key, err
 }
 
 func FindKeyWordReplyByKey(keyWord string) (*KeywordsReply, error) {
@@ -67,22 +67,21 @@ func FindKeyWordReplyByKey(keyWord string) (*KeywordsReply, error) {
 }
 
 // 按道理这个样子只是单个创建，如果多个操作要涉及事物的操作，用的再说
-func (keyReply *KeywordsReply) Insert(tx *gorm.DB,person string) error {
+func (keyReply *KeywordsReply) Insert(tx *gorm.DB, person string) error {
 	keyReply.CreatedAt = time.Now()
 	keyReply.CreatedPerson = person
 	keyReply.Status = StatusNormal
 	//冗余account_id
-	keyReply.AccountId="default"
-	keyReply.RawId="default"
-	if err:=tx.Create(keyReply).Error;err!=nil{
+	keyReply.AccountId = "default"
+	keyReply.RawId = "default"
+	if err := tx.Create(keyReply).Error; err != nil {
 		tx.Rollback()
 		return err
-	}else {
+	} else {
 		return nil
 	}
 
 }
-
 
 // update
 func (keyReply *KeywordsReply) Update(tx *gorm.DB, person string) error {
@@ -90,7 +89,6 @@ func (keyReply *KeywordsReply) Update(tx *gorm.DB, person string) error {
 	keyReply.UpdatedPerson = person
 	keyReply.UpdatedAt = &updateDate
 	//骚操作
-	//return tx.Model(&keyReply).Table("keywords_reply").UpdateColumn("key_word",keyReply.Key).UpdateColumn("msg_type",keyReply.MsgType).UpdateColumn("value",keyReply.Value).UpdateColumn("updated_person",person).Error
 	if err := tx.Table("keywords_reply").Where("id = ? ", keyReply.ID).Update(keyReply).Error; err != nil {
 		tx.Rollback()
 		return err
