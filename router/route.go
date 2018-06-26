@@ -7,10 +7,16 @@ import (
 	"golangWeixin/controller/user"
 	"golangWeixin/controller/weixin"
 	"golangWeixin/controller/keyrepaly"
+	"golangWeixin/controller/common"
+	"github.com/gin-contrib/cors"
+	"net/http"
 )
 
 // Route 路由
 func Route(router *gin.Engine) {
+
+	router.Use(cors.Default())
+
 	apiPrefix := config.ServerConfig.APIPrefix
 
 	api := router.Group(apiPrefix, middleware.RefreshTokenCookie)
@@ -31,6 +37,12 @@ func Route(router *gin.Engine) {
 
 
 		api.GET("/test", keyrepaly.Test)
+
+		//上传文件
+		api.POST("/upload",common.Fileupload)
+
+
+		api.StaticFS("/file",http.Dir("./static"))
 
 	}
 }
