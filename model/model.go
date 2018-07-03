@@ -67,3 +67,10 @@ func FindOneByFiled(tableName string, indexFile string, indexValue interface{}, 
 	}
 	return nil
 }
+
+func FindOneByFiledAll(tableName string, indexFile string, indexValue interface{}, in interface{}) (err error) {
+	if err := common.DB.Table(tableName).Where("status = ?", StatusNormal).Where(indexFile+" = ? ", indexValue).Find(in).Error; err != nil {
+		return err
+	}
+	return nil
+}

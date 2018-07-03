@@ -119,13 +119,14 @@ func KeyRpeyls(c *gin.Context) {
 		case model.KeywordsReplyMsgNews:
 
 			var keyReplyNews []KeyReplyNewsVo
+			var keyReplyNewEntity []model.KeywordsReplyNewsSub
 			//查找数据
-			news, err := model.FindKeywordsReplyNewsSubByReplyId(true, entity.ID)
+			 err := model.FindOneByFiledAll("keywords_reply_news_sub","reply_id",entity.ID,&keyReplyNewEntity)
 			if err != nil {
 				common.SendErrJSON( "查找子类New出错", c)
 				return
 			}
-			if err := utils.TransformToOther(&news, &keyReplyNews); err != nil {
+			if err := utils.TransformToOther(&keyReplyNewEntity, &keyReplyNews); err != nil {
 				common.SendErrJSON( "序列化出错", c)
 				return
 			}

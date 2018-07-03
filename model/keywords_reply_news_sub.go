@@ -17,6 +17,10 @@ type KeywordsReplyNewsSub struct {
 	ReplyId     int `gorm:"column:reply_id"`
 }
 
+func (KeywordsReplyNewsSub) TableName() string {
+	return "keywords_reply_news_sub"
+}
+
 func _listPageReplyNews(status bool, replyId string) ([]*KeywordsReply, error) {
 	var pages []*KeywordsReply
 	var err error
