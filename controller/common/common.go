@@ -37,8 +37,8 @@ func Fileupload(c *gin.Context){
 
 	//c.String(http.StatusCreated, "upload successful")
 
-	filepath := "http://127.0.0.1:8023/api/file/" + filename
 
+	filepath := "http://127.0.0.1:8023/api/file/" + filename
 	c.JSON(http.StatusOK, gin.H{
 		"filePath": filepath,
 	})

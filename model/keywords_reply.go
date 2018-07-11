@@ -88,7 +88,10 @@ func (keyReply *KeywordsReply) Update(tx *gorm.DB, person string) error {
 	updateDate := time.Now()
 	keyReply.UpdatedPerson = person
 	keyReply.UpdatedAt = &updateDate
-	//骚操作
+	//骚操作，gorm字段等于0居然不更新。。。我。。。
+	if keyReply.MsgType == 0 {
+		tx.Table("keywords_reply").Model(&keyReply).Update("msg_type", 0)
+	}
 	if err := tx.Table("keywords_reply").Where("id = ? ", keyReply.ID).Update(keyReply).Error; err != nil {
 		tx.Rollback()
 		return err
