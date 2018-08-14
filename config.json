@@ -20,7 +20,7 @@
 	"go": {
       "APIPoweredBy"        : "Golang123 API",/*后台go加的X-Powered-By*/
       "SiteName"            : "Golang中文社区",      /*网站名称*/
-      "Host"                : "dev.golang123.com",  /*网站域名*/
+      "Host"                : "127.0.0.1",  /*网站域名*/
       "ImgHost"             : "dev.golang123.com",  /*图片服务器域名*/
       "Env"                 : "development",        /*模式(开发，测试，产品)*/
       "LogDir"              : "", /*日志文件所在的目录，如果不设的话，默认在项目目录下*/
@@ -40,7 +40,6 @@
       "MailHost"            : "smtp.qq.com",        /*smtp邮箱域名*/
       "MailPort"            : 465,                  /*smtp邮箱端口*/
       "MailFrom"            : "",          /*邮件来源*/
-      "Github"              : "https://github.com/shen100/golang123",/*golang123项目github地址*/
       "BaiduPushLink"       : ""/*百度链接提交接口地址*/
 	}
 }

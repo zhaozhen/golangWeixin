@@ -21,7 +21,10 @@ func Route(router *gin.Engine) {
 
 	api := router.Group(apiPrefix, middleware.RefreshTokenCookie)
 	{
+		//对接公众号
 		api.GET("/weixin.action", weixin.WeixinAction)
+		//对接公众号
+		api.POST("/weixin.action", weixin.WeixinAction)
 		api.POST("/signin", user.Signin)
 		api.POST("/register", user.Register)
 		api.POST("/signout", middleware.SigninRequired,
