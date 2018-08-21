@@ -23,4 +23,3 @@ import:
   version: ^2.0.0
 - package: github.com/vmihailenco/msgpack
   version: ^3.3.3
-- package: golangDemo/common
