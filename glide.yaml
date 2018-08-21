@@ -1,0 +1,26 @@
+package: golangWeixin
+import:
+- package: github.com/dgrijalva/jwt-go
+  version: ^3.2.0
+- package: github.com/garyburd/redigo
+  version: ^2.0.0
+  subpackages:
+  - redis
+- package: github.com/gin-contrib/cors
+  version: ^1.2.0
+- package: github.com/gin-gonic/gin
+  version: ^1.3.0
+  subpackages:
+  - binding
+  - json
+- package: github.com/jinzhu/gorm
+  version: ^1.9.1
+  subpackages:
+  - dialects/mysql
+- package: github.com/microcosm-cc/bluemonday
+  version: ^1.0.1
+- package: github.com/russross/blackfriday
+  version: ^2.0.0
+- package: github.com/vmihailenco/msgpack
+  version: ^3.3.3
+- package: golangDemo/common
