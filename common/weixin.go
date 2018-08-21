@@ -1,4 +1,4 @@
-package utils
+package common
 
 import (
 	"sort"
@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"encoding/json"
 	"io/ioutil"
-	"golangWeixin/common"
 )
 
 type Token struct {
@@ -27,14 +26,14 @@ func SignatureMethod(params ...string) string {
 }
 
 func GetAccessToken() string {
-	c := common.RedisPool.Get()
+	c := RedisPool.Get()
 	accessToken, err := redis.String(c.Do("GET", "access_token"))
 	if err != nil {
 		fmt.Println("redis get failed----------->_<----------:", err)
 	}
 	if len(accessToken) <= 0 {
 		//没有accessToken，从新获取token，并设置到redis里面做个缓存
-		url := fmt.Sprintf(common.WEIXIN_HTTP_TOKEN, common.WEIXIN_APPID, common.WEIXIN_APP_SECRET)
+		url := fmt.Sprintf(WEIXIN_HTTP_TOKEN, WEIXIN_APPID, WEIXIN_APP_SECRET)
 
 		resp, err := http.Get(url)
 		if err != nil {

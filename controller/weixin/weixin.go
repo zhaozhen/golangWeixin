@@ -3,7 +3,7 @@ package weixin
 import (
 	"github.com/gin-gonic/gin"
 	"fmt"
-	"golangWeixin/utils"
+	"golangWeixin/common"
 	"golangWeixin/constant"
 	"github.com/gin-gonic/gin/binding"
 	"encoding/xml"
@@ -90,7 +90,7 @@ func WeixinAction(c *gin.Context) {
 			fmt.Println("解析参数出错！")
 			return
 		}
-		s := utils.SignatureMethod(constant.WEIXIN_TOKEN, weixinParam.Timestamp, weixinParam.Nonce)
+		s := common.SignatureMethod(constant.WEIXIN_TOKEN, weixinParam.Timestamp, weixinParam.Nonce)
 		if weixinParam.Signature == s {
 			c.Writer.WriteString(weixinParam.Echostr)
 		}
