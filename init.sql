@@ -15,7 +15,7 @@ CREATE TABLE `keywords_reply` (
   `raw_id` varchar(255) NOT NULL COMMENT '公众号原始Id（冗余）',
   `deleted_person` varchar(255) DEFAULT NULL COMMENT '删除人员',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
 -- 测试数据
 INSERT INTO `test`.`keywords_reply`(`id`, `key_word`, `msg_type`, `value`, `status`, `created_at`, `created_person`, `updated_at`, `updated_person`, `deleted_at`, `account_id`, `raw_id`, `deleted_person`) VALUES (1, '测试文字', '0', '测试文本！', 0, '2018-05-16 22:28:17', 'SYSTEM', '2018-08-05 16:45:11', 'SYSTEM', NULL, '123', '123', NULL);
@@ -41,7 +41,7 @@ CREATE TABLE `keywords_reply_music_sub` (
   `reply_id` varchar(255) NOT NULL COMMENT '冗余',
   `deleted_person` varchar(255) DEFAULT NULL COMMENT '删除人员',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 
 INSERT INTO `test`.`keywords_reply_music_sub`(`id`, `title`, `description`, `music_url`, `hq_music_url`, `thumb_media_id`, `status`, `created_at`, `created_person`, `updated_at`, `updated_person`, `deleted_at`, `reply_id`, `deleted_person`) VALUES (17, '我是音乐1', '我是音乐的描述', 'www.baidu.com', 'www.baidui.com', 'www.baidu.com', 0, '2018-06-24 15:45:00', 'SYSTEM', '2018-08-05 16:45:15', 'SYSTEM', NULL, '15', '');
@@ -65,7 +65,7 @@ CREATE TABLE `keywords_reply_news_sub` (
   `reply_id` varchar(255) NOT NULL COMMENT '冗余',
   `deleted_person` varchar(255) DEFAULT NULL COMMENT '删除人员',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 INSERT INTO `test`.`keywords_reply_news_sub`(`id`, `title`, `description`, `pic_url`, `url`, `status`, `created_at`, `created_person`, `updated_at`, `updated_person`, `deleted_at`, `reply_id`, `deleted_person`) VALUES (1, '图文1', '我是测试图文1', 'http://gb.cri.cn/mmsource/images/2014/02/10/37/3886148822463260913.jpg', 'http://baidu.com', 0, NULL, NULL, NULL, NULL, NULL, '16', NULL);
 INSERT INTO `test`.`keywords_reply_news_sub`(`id`, `title`, `description`, `pic_url`, `url`, `status`, `created_at`, `created_person`, `updated_at`, `updated_person`, `deleted_at`, `reply_id`, `deleted_person`) VALUES (2, '图文2', '我是测试图文2', 'http://uploads.5068.com/allimg/1801/85-1P119154919.jpg', 'http://baidu.com', 0, NULL, NULL, NULL, NULL, NULL, '16', NULL);
